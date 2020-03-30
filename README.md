@@ -2,7 +2,7 @@ Implementation of a version of BICO, an algorithm for computing streaming corese
 
 All credit for the algorithm itself (as opposed to my implemenation of it) goes to the authors of the paper in the above link.
 
-After cloing the repository, to build the project, run 'make'
+After cloing the repository, to build the project, run 'make'.
 
-To test the algorithm on the s1 dataset, run './test/BICO_liteTest'
+To test the algorithm on the s1 dataset, run './test/BICO_liteTest'.
 
