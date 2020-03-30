@@ -45,7 +45,7 @@ BICO_liteTest.o: BICO_liteTest.cpp BICO_lite.h UCICovertypeDataStream.h SkDataSt
 	$(CC) $(DEBUG_OPT) -std=c++$(C++_STD) -c BICO_liteTest.cpp -o $(BUILD_DIR)/BICO_liteTest.o
 
 KMeansppTest.o: UCICovertypeDataStream.h KMeanspp.cpp KMeanspp.h Matrix.h
-	$(CC) $(DEBUG_OPT) -std=c++$(C++_STD) -I /usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/include/python3.7m -I /usr/local/lib/python3.7/site-packages/numpy/core/include -L /usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib -lpython3.7 -c KMeansppTest.cpp -o $(BUILD_DIR)/KMeansppTest.o
+	$(CC) $(DEBUG_OPT) -std=c++$(C++_STD) -c KMeansppTest.cpp -o $(BUILD_DIR)/KMeansppTest.o
 
 SkDataStream.o: SkDataStream.cpp SkDataStream.h
 	$(CC) $(DEBUG_OPT) -std=c++$(C++_STD) -c SkDataStream.cpp -o $(BUILD_DIR)/SkDataStream.o
