@@ -25,6 +25,14 @@ public:
     Vec(uint n, T* v) : n_(n), v_(v) {}
 
     /**
+     * construct a constant vector
+     */
+    Vec(uint n, T* v, T c) {
+        Vec(n,v);
+        for (uint i=0;i<n_;++i) v_[i] = c;
+    }
+
+    /**
     * copy constructor
     */
     Vec(const Vec<T>& v) : n_(v.n_), v_(v.v_) {}
@@ -60,6 +68,11 @@ public:
     Vec<T>& operator+=(const Vec<T> c) {
         assert(n_==c.size());
         for (uint i=0; i<n_; ++i) v_[i] += c[i];
+        return *this;
+    }
+
+    Vec<float>& operator*=(float c) {
+        for (uint i=0; i<n_; ++i) v_[i] *= c;
         return *this;
     }
 
@@ -175,30 +188,6 @@ public:
     }
 
     /**
-    * vec ⦿ vec, Hadamard product with drop-out
-    */
-    static void hmul(const Vec<T> A, const Vec<T> B, Vec<T>& C, const BitVector& mask) {
-        assert(A.n_==B.n_);
-        assert(A.n_==C.n_);
-        for (uint k = 0; k < A.n_; ++k) {
-            if (!mask.get(k)) continue;
-            C[k] = A[k] * B[k];
-        }
-    }
-
-    static void asum(T beta, Vec<T> A, const Vec<T> B) {
-        assert(A.n_==B.n_);
-        std::transform(A.v_, A.v_ + A.n_, B.v_, A.v_,
-            [beta](T x, T y) -> T { return beta*x + (1-beta)*y; } );
-    }
-
-    static void asum2(T beta, Vec<T> A, const Vec<T> B) {
-        assert(A.n_==B.n_);
-        std::transform(A.v_, A.v_ + A.n_, B.v_, A.v_,
-            [beta](T x, T y) -> T { return beta*x + (1-beta)*y*y; } );
-    }
-
-    /**
     * replace v[i] by (v[i] - μ) / σ 
     */
     void gaussianNormalize() {
@@ -228,6 +217,21 @@ public:
         return maxIndex;
     }
 
+    /**
+    * return index of largest value
+    */
+    uint argMin() const {
+        uint minIndex = 0;
+        T minValue = 1e38; //std::numeric_limits<T>::max();
+        for (uint i=0; i<n_; ++i) {
+            if (v_[i] < minValue) {
+                minIndex = i;
+                minValue = v_[i];
+            }
+        }
+        return minIndex;
+    }
+
     // iterator interface
     T* begin() { return v_; }
     T* end() { return v_+n_; }
@@ -243,7 +247,6 @@ public:
     T* v_;
 };
 
-
 //
 // nxm generic matrix
 //
@@ -252,12 +255,12 @@ public:
     /**
     * default constructor : empty matrix
     */
-    Matrix() : n_(0), m_(0), sz_(0), v_(NULL), rot_(false) { }
+    Matrix() : n_(0), m_(0), sz_(0), v_(NULL) { }
 
     /**
     * copy constructor : share underlying array
     */
-    Matrix(const Matrix<T>& M) : n_(M.n_), m_(M.m_), sz_(M.sz_), v_(M.v_), rot_(false) { }
+    Matrix(const Matrix<T>& M) : n_(M.n_), m_(M.m_), sz_(M.sz_), v_(M.v_) { }
 
     /**
     * construct matrix with given dimensions and storage
@@ -265,7 +268,7 @@ public:
     * @param m  The column dimension.
     * @param v  The array - externally allocated.
     */
-    Matrix(uint n, uint m, T* v) : n_(n), m_(m), sz_(n*m), v_(v), rot_(false) { }
+    Matrix(uint n, uint m, T* v) : n_(n), m_(m), sz_(n*m), v_(v) { }
 
     void uniform_init(T range) {
         uint seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -285,14 +288,14 @@ public:
     * return (i,j)-th R-value
     */
     T operator()(int i, int j) const {
-        return rot_ ? v_[m_*(n_-i-1)+(m_-j-1)] : v_[m_*i+j];
+        return v_[m_*i+j];
     }
 
     /**
     * return (i,j)-th L-value
     */
     T& operator()(int i, int j) { 
-        return rot_ ? v_[m_*(n_-i-1)+(m_-j-1)] : v_[m_*i+j];
+        return v_[m_*i+j];
     }
 
     /**

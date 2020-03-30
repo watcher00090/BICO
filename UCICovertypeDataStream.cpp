@@ -2,8 +2,6 @@
 #include <fstream>
 #include <iostream>
 
-using namespace xtreml;
-
 UCICovertypeDataStream::UCICovertypeDataStream(const char* fname) : 
     _file(fname)
 {
@@ -38,6 +36,6 @@ void* UCICovertypeDataStream::currPoint() const {
     return (void*)_currdatapoint;
 }
 
-void* UCICovertypeDataStream::currLabel() const {
-    return (void*)_currlabel;
+int UCICovertypeDataStream::currLabel() const {
+    return _currlabel;
 }

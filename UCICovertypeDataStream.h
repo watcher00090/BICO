@@ -2,8 +2,6 @@
 
 #include <fstream>
 
-namespace xtreml {
-
 class UCICovertypeDataStream {
 
 public:
@@ -13,12 +11,10 @@ public:
     virtual bool done() const;
     virtual void rewind();
     virtual void* currPoint() const;
-    virtual void* currLabel() const;
+    virtual int currLabel() const;
 
 protected:
     std::ifstream _file; // file stream
     int _currdatapoint[53];
     int _currlabel;
 };
-
-}

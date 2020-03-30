@@ -1,22 +1,16 @@
 #include "BICO_lite.h"
 #include <iterator>
-#include "iostream"
+#include <iostream>
 #include <vector>
 #include <stack>
 #include <cmath>
-
-using namespace xtreml;
-
-BICO_lite::BICO_lite() {
-    std::cout << "constructor being called..." << std::endl;
-}
 
 std::ostream& operator<<(std::ostream& os, CoresetPair pair) {
     return os << "(" << pair.p_ << ", " << pair.w_ << ")";
 }
 
 std::ostream& operator<<(std::ostream& os, ClusteringFeature f) {
-    return os << "[" << "reference point = " << f.r_ << ", n = " << f.n_ << ", P = " << f.P_ << ", s = " << f.s_ << ", level = " << f.level << "]";
+    return os << "[" << "reference point = " << f.r_ << ", n = " << f.n_ << ", P = " << f.P_ << ", s = " << f.s_ << ", level = " << f.level_ << "]";
 }
 
 std::ostream& operator<<(std::ostream& os, BICO_lite tree) {
@@ -28,17 +22,25 @@ std::ostream& operator<<(std::ostream& os, BICO_lite tree) {
         S.pop();
 
         //perform operation
-        for (int k=0; k<4*v->level; ++k) {
+        for (int k=0; k<4*v->level_; ++k) {
             os << " ";
         }
         os << *v << std::endl;
 
-        int i=0;
         for (auto it = v->children.begin(); it != v->children.end(); ++it) { // traverse all children of v
             S.push(*it);
         }
     }
     return os;
+}
+
+// used for debugging with lldb
+void BICO_lite::toStandardOutput() {
+    std::cout << *this << std::endl;
+}
+
+void ClusteringFeature::toStandardOutput() {
+    std::cout << *this << std::endl;
 }
 
 // assumes the feature has been initialized
@@ -52,45 +54,35 @@ void ClusteringFeature::insert(Vec<float> x) {
     ++n_;
 }
 
-// x may be used after calling
-void BICO_lite::update(Vec<float> x) {
+void BICO_lite::CF-update(ClusteringFeature* xFeat) {
     ClusteringFeature* rFeat = root;
     Vec<float> r = rFeat->r_;
+    Vec<float> x = xFeat->r_;
 
     std::vector<ClusteringFeature*> F = rFeat->children;
     unsigned i=1;
 
-    float* xArrayCopy = new float[x.size()];
-    Vec<float> xCopy = Vec<float>(x.size(), xArrayCopy);
-    xCopy.copyFrom(x);
-
     while (true)
     if (F.empty() || Vec<float>::dist(x, ClusteringFeature::nearest(x,F)->r_) > sqrt(T_ / pow(2,i+4))) {
 
-        // open a new feature on level i as child of cf(r)
-        ClusteringFeature newFeature = ClusteringFeature(xCopy);
-        newFeature.n_ = 1;
-
-        // create P buffer for new feature
-        float* newFeaturePbuf = new float[x.size()];
-        for (int i=0; i<x.size(); ++i) newFeaturePbuf[i] = 0;
-        Vec<float> P = Vec<float>(x.size(), newFeaturePbuf);
-        newFeature.P_ = P;
-
-        float l = Vec<float>::length(x);
-        newFeature.s_ = l*l;
-        newFeature.level = 0;
-
-        rFeat->children.push_back(&newFeature);
+        
+        rFeat->children.push_back(xFeat);
         ++nFeatures_;
+
         break;
 
     } else {
         ClusteringFeature* yFeat = ClusteringFeature::nearest(x, F);
         Vec<float> y = yFeat->r_;
-        float d = Vec<float>::dist(x,y);
-        if (yFeat->level + d*d <= T_) {
-            yFeat->insert(x);
+        xFeat->P_ /= xFeat->n_;
+        float len = Vec<float>::length(xFeat->P_);
+        float d   = Vec<float>::dist(y,xFeat->P_);
+        float cprime = xFeat->n_ * (l*l + d*d);
+        xFeat->P_ *= xFeat->n_;
+
+        if (yFeat->level_ + d*d <= T_) {
+
+
             break;
         } else {
             F = yFeat->children;
@@ -103,7 +95,76 @@ void BICO_lite::update(Vec<float> x) {
 }
 
 void BICO_lite::rebuild() {
+    while (nFeatures_ >= n_max_) {
+        T_ = 2*T_;
+        std::queue<ClusteringFeature*> Q;
+        while (!root->children.empty()) {
+            Q.push(root->children.pop_back());
+            --nFeatures;
+        }
 
+        while (!Q.empty()) {
+            ClusteringFeature* cf_x = Q.front();
+            Vec<float> x = feat->P_;
+            while (!cf_x->children.empty()) {
+                Q.push(cf_x->children.pop_back());
+                --nFeatures;
+            }
+            CF-update(cf_x);
+            Q.pop(); // remove cf_x from Q
+        }
+    }
+}
+
+// x may be used after calling
+void BICO_lite::update(Vec<float> x) {
+    ClusteringFeature* rFeat = root;
+    Vec<float> r = rFeat->r_;
+
+    std::vector<ClusteringFeature*> F = rFeat->children;
+    unsigned i=1;
+
+    float* xArrayCopy = new float[x.size()];
+    Vec<float>* xCopy = new Vec<float>(x.size(), xArrayCopy);
+    xCopy->copyFrom(x);
+
+    while (true)
+    if (F.empty() || Vec<float>::dist(x, ClusteringFeature::nearest(x,F)->r_) > sqrt(T_ / pow(2,i+4))) {
+
+        // open a new feature on level i as child of cf(r)
+        ClusteringFeature* newFeature = new ClusteringFeature(*xCopy);
+        newFeature->n_ = 1;
+
+        // create P buffer for new feature
+        float* newFeaturePbuf = new float[x.size()];
+        Vec<float>* P = new Vec<float>(x.size(), newFeaturePbuf);
+        P->copyFrom(x);
+        newFeature->P_ = *P;
+
+        float l = Vec<float>::length(x);
+        newFeature->s_ = l*l;
+        newFeature->level_ = i;
+
+        rFeat->children.push_back(newFeature);
+        ++nFeatures_;
+
+        break;
+
+    } else {
+        ClusteringFeature* yFeat = ClusteringFeature::nearest(x, F);
+        Vec<float> y = yFeat->r_;
+        float d = Vec<float>::dist(x,y);
+        if (yFeat->level_ + d*d <= T_) {
+            yFeat->insert(x);
+            break;
+        } else {
+            F = yFeat->children;
+            rFeat = yFeat; r = y;
+            ++i;
+        }
+    }
+
+    if (nFeatures_ > n_max_) rebuild();
 }
 
 std::vector<CoresetPair> BICO_lite::queryCoreset() {
@@ -114,13 +175,17 @@ std::vector<CoresetPair> BICO_lite::queryCoreset() {
     while (!S.empty()) {
         ClusteringFeature* v = S.top();
         S.pop();
+        
+        if (!(v->isRoot())) {
+            assert(v->n_ != 0);
 
-        assert(v->n_ != 0);
+            Vec<float>* p = new Vec<float>(v->r_.n_, new float[v->r_.n_]);  //allocate memory for the coreset point
+            p->copyFrom(v->P_); // sum of all represented points
+            *p /= (float) v->n_; // divide by number of points
 
-        Vec<float> p(v->r_.n_, new float[v->r_.n_]);  //allocate memory for the coreset point
-        p /= (float) v->n_;
-
-        coreset.push_back(CoresetPair(p, (float) v->n_));
+            CoresetPair* pair = new CoresetPair(*p, (float) v->n_);
+            coreset.push_back(*pair);
+        }
 
         for (auto it = v->children.begin(); it != v->children.end(); ++it) { // traverse all children of v
             S.push(*it);

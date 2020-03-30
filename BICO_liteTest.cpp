@@ -1,18 +1,19 @@
+#include <iostream>
 #include "BICO_lite.h" 
-#include "Types.h"
 #include "UCICovertypeDataStream.h"
+#include "SkDataStream.h"
 #include "KMeanspp.h"
 
 void test1() {
-    xtreml::BICO_lite kmeans = xtreml::BICO_lite();
+    BICO_lite kmeans = BICO_lite();
 }
 
 void test2() {
     float* v = new float[5];
     uint dim = 5;
-    xtreml::Vec<float> p = xtreml::Vec<float>(dim,v);
+    Vec<float> p = Vec<float>(dim,v);
     std::cout << "p = " << p << std::endl;
-    xtreml::CoresetPair pair = xtreml::CoresetPair(p, 15.0);
+    CoresetPair pair = CoresetPair(p, 15.0);
     std::cout << "printing the pair..." << std::endl;
     std::cout << pair << std::endl;
 }
@@ -20,9 +21,9 @@ void test2() {
 void test3() {
     float* v = new float[5];
     uint dim = 5;
-    xtreml::Vec<float> p = xtreml::Vec<float>(dim,v);
+    Vec<float> p = Vec<float>(dim,v);
     std::cout << "p = " << p << std::endl;
-    xtreml::CoresetPair pair = xtreml::CoresetPair(p, 15.0);
+    CoresetPair pair = CoresetPair(p, 15.0);
     std::cout << "printing the pair..." << std::endl;
     std::cout << pair << std::endl;
 }
@@ -31,27 +32,27 @@ void test4() {
     std::cout << __FUNCTION__ << std::endl;
 
     float v0_arr[2] = {5.0,6.5};
-    xtreml::Vec<float> v0(2,v0_arr);
+    Vec<float> v0(2,v0_arr);
     float v1_arr[2] = {4.0,-6.5};
-    xtreml::Vec<float> v1(2,v1_arr);
+    Vec<float> v1(2,v1_arr);
     float v2_arr[2] = {2.5,15.5};
-    xtreml::Vec<float> v2(2,v2_arr);
+    Vec<float> v2(2,v2_arr);
 
     float x_arr[2] = {18.0,4.5};
-    xtreml::Vec<float> x(2,x_arr);
+    Vec<float> x(2,x_arr);
 
-    xtreml::ClusteringFeature f0 = xtreml::ClusteringFeature(v0);
-    xtreml::ClusteringFeature f1 = xtreml::ClusteringFeature(v1);
-    xtreml::ClusteringFeature f2 = xtreml::ClusteringFeature(v2);
+    ClusteringFeature f0 = ClusteringFeature(v0);
+    ClusteringFeature f1 = ClusteringFeature(v1);
+    ClusteringFeature f2 = ClusteringFeature(v2);
 
-    std::vector<xtreml::ClusteringFeature*> featureVector = std::vector<xtreml::ClusteringFeature*>();
+    std::vector<ClusteringFeature*> featureVector = std::vector<ClusteringFeature*>();
     featureVector.push_back(&f0);
     featureVector.push_back(&f1);
     featureVector.push_back(&f2);
 
-    float df0 = xtreml::Vec<float>::dist(f0.r_,x);
-    float df1 = xtreml::Vec<float>::dist(f1.r_,x);
-    float df2 = xtreml::Vec<float>::dist(f2.r_,x);
+    float df0 = Vec<float>::dist(f0.r_,x);
+    float df1 = Vec<float>::dist(f1.r_,x);
+    float df2 = Vec<float>::dist(f2.r_,x);
 
     std::cout << "v0 = " << v0 << std::endl;
     std::cout << "v1 = " << v1 << std::endl;
@@ -60,8 +61,8 @@ void test4() {
 
     std::cout << "d(x,f0.ref) = " << df0 << ", d(x,f1.ref) = " << df1 << ", d(x,f2.ref) = " << df2 << std::endl;
 
-    xtreml::ClusteringFeature* nearestFeature = xtreml::ClusteringFeature::nearest(x, featureVector);
-    xtreml::Vec<float> nearestPoint = nearestFeature->r_;
+    ClusteringFeature* nearestFeature = ClusteringFeature::nearest(x, featureVector);
+    Vec<float> nearestPoint = nearestFeature->r_;
     std::cout << nearestPoint << std::endl;
 }
 
@@ -70,36 +71,36 @@ void test5() {
     std::cout << "testing << operator for BICO_lite objects..." << std::endl;
     
     float v0_arr[2] = {5.0,6.5};
-    xtreml::Vec<float> v0(2,v0_arr);
+    Vec<float> v0(2,v0_arr);
     float v1_arr[2] = {4.0,-6.5};
-    xtreml::Vec<float> v1(2,v1_arr);
+    Vec<float> v1(2,v1_arr);
     float v2_arr[2] = {2.5,15.5};
-    xtreml::Vec<float> v2(2,v2_arr);
+    Vec<float> v2(2,v2_arr);
     float v3_arr[2] = {-7.0,25.5};
-    xtreml::Vec<float> v3(2,v3_arr);
+    Vec<float> v3(2,v3_arr);
     float v4_arr[2] = {14.0,-.5};
-    xtreml::Vec<float> v4(2,v4_arr);
+    Vec<float> v4(2,v4_arr);
     float v5_arr[2] = {0.07070707,10.5};
-    xtreml::Vec<float> v5(2,v5_arr);
+    Vec<float> v5(2,v5_arr);
     float v6_arr[2] = {0.77738327,10000.5};
-    xtreml::Vec<float> v6(2,v6_arr);
+    Vec<float> v6(2,v6_arr);
     float v7_arr[2] = {77777.77777,.0005};
-    xtreml::Vec<float> v7(2,v7_arr);
+    Vec<float> v7(2,v7_arr);
     float v8_arr[2] = {99981,8885};
-    xtreml::Vec<float> v8(2,v8_arr);
+    Vec<float> v8(2,v8_arr);
     float v9_arr[2] = {389383,0.0};
-    xtreml::Vec<float> v9(2,v9_arr);
+    Vec<float> v9(2,v9_arr);
 
-    xtreml::ClusteringFeature f0 = xtreml::ClusteringFeature(v0);
-    xtreml::ClusteringFeature f1 = xtreml::ClusteringFeature(v1);
-    xtreml::ClusteringFeature f2 = xtreml::ClusteringFeature(v2);
-    xtreml::ClusteringFeature f3 = xtreml::ClusteringFeature(v3);
-    xtreml::ClusteringFeature f4 = xtreml::ClusteringFeature(v4);
-    xtreml::ClusteringFeature f5 = xtreml::ClusteringFeature(v5);
-    xtreml::ClusteringFeature f6 = xtreml::ClusteringFeature(v6);
-    xtreml::ClusteringFeature f7 = xtreml::ClusteringFeature(v7);
-    xtreml::ClusteringFeature f8 = xtreml::ClusteringFeature(v8);
-    xtreml::ClusteringFeature f9 = xtreml::ClusteringFeature(v9);
+    ClusteringFeature f0 = ClusteringFeature(v0);
+    ClusteringFeature f1 = ClusteringFeature(v1);
+    ClusteringFeature f2 = ClusteringFeature(v2);
+    ClusteringFeature f3 = ClusteringFeature(v3);
+    ClusteringFeature f4 = ClusteringFeature(v4);
+    ClusteringFeature f5 = ClusteringFeature(v5);
+    ClusteringFeature f6 = ClusteringFeature(v6);
+    ClusteringFeature f7 = ClusteringFeature(v7);
+    ClusteringFeature f8 = ClusteringFeature(v8);
+    ClusteringFeature f9 = ClusteringFeature(v9);
 
     /************************************
      *
@@ -137,7 +138,7 @@ void test5() {
     f6.children.push_back(&f7);
     f6.children.push_back(&f8);
 
-    xtreml::BICO_lite feature_tree = xtreml::BICO_lite();
+    BICO_lite feature_tree = BICO_lite();
     feature_tree.root = &f0;
 
     std::cout << feature_tree << std::endl;
@@ -146,30 +147,165 @@ void test5() {
 void test6() {
     std::cout <<  __FUNCTION__ << std::endl;
 
-    xtreml::BICO_lite clusteringMachine = xtreml::BICO_lite(5000); //n_max = 5000
+    SkDataStream ds = SkDataStream("s1.txt", "s-originals/s1-label.pa", 1);
+    //UCICovertypeDataStream ds = UCICovertypeDataStream("data/covtype.data");
 
-    xtreml::UCICovertypeDataStream covertypeDataStream = xtreml::UCICovertypeDataStream;
-    xtreml::UCICovertypeDataStream ds = xtreml::UCICovertypeDataStream("../data/covtype.data");
-    int* tmp; // has 53 attributes
+    //uint dim = 53;
+    //uint k = 7;
+    uint dim = 2;
+    uint k = 15;
+
+    std::vector<Vec<float>> data;
+    std::vector<uint> labels;
+    uint groundTruthClusterSize[k]; // groundTruthCentroids[k] = centroid of points belonging to ground truth cluster k
+
+    for (int i=0;i<k;++i) groundTruthClusterSize[i] = 0;
+
+    Vec<float> groundTruthCentroids[k];
+    for (int i=0;i<k;++i) {
+        groundTruthCentroids[i] = Vec<float>(dim,new float[dim]);
+        groundTruthCentroids[i].reset();
+    }
+
+    int* tmp;
     int label;
-
-    float* dataVec_buf = new float[53];
-    Vec<float> dataVec = Vec<float>(53,dataVec_buf);
-
     while (!ds.done()) {
         tmp = (int*) ds.currPoint();
-        label = static_cast<int>(reinterpret_cast<intptr_t>(ds.currLabel()));
-        for (int i=0;i<53;++i) std::cout << tmp[i] << " ";
-        std::cout << "# " << label << std::endl;
+        label = ds.currLabel();
 
-        for (int i=0;i<53;++i) dataVec[i] = (float) tmp[i];
 
-        clusteringMachine.update(dataVec);
+        float* databuf = new float[dim];
+        for (int j=0;j<dim;++j) databuf[j] = (float)tmp[j];
 
-        std::cout << "num points processed = " << i << ", clustering score = " << xtreml::kmeanspp(clusteringMachine.queryCoreset(), 7) << std::end; // 7 forest cover types
+        data.push_back(Vec<float>(dim,databuf));
+        labels.push_back((float)label);
+        groundTruthCentroids[label-1] += Vec<float>(dim,databuf);
+        groundTruthClusterSize[label-1]++;
 
         ds.next();
     }
+
+    assert(data.size() == labels.size());
+    uint numpoints = data.size();
+
+    for (int i=0;i<k;++i) {
+        assert(groundTruthClusterSize[i] > 0);
+        groundTruthCentroids[i] /= (float)groundTruthClusterSize[i];
+    }
+
+    uint* c_buf = new uint[data.size()];
+    Vec<uint> c(data.size(),c_buf);
+
+    Vec<float>* centroids = new Vec<float>[k];
+    for (int i=0;i<k;++i) {
+        centroids[i] = Vec<float>(dim,new float[dim]);
+        centroids[i].reset();
+    }
+
+    Matrix<float> confusionMatrix(k,k,new float[k*k]);
+    confusionMatrix.reset();
+
+    float score = kmeanspp(&data.at(0),data.size(),k,centroids,c);
+
+    std::cout << "score = " << score << std::endl;
+
+    // confusion matrix: element in (row,col) = (i,j) = percent of items classified into class i but actually in class j
+    float overallAccuracy = accuracy(&data.at(0),&labels.at(0),data.size(),k,centroids,c,groundTruthCentroids,confusionMatrix);
+
+    std::cout << "overall accuracy = " << overallAccuracy << std::endl;
+
+    std::cout << "printing confusion matrix..." << std::endl;
+    std::cout << confusionMatrix << std::endl;
+
+
+
+
+
+
+
+
+
+
+    // test the BICO data structure
+    ds.rewind();
+    std::cout << "now testing the same dataset using BICO..." << std::endl;
+
+    BICO_lite clusteringMachine = BICO_lite(dim, 500.0, 1400); //n_max = 200k = 1400
+
+    float* dataVec_buf = new float[dim];
+    Vec<float> dataVec = Vec<float>(dim,dataVec_buf);
+
+    std::vector<CoresetPair> coreset;
+
+    //for (int i=0;i<k;++i) centroids[i].reset(); 
+    //cprime.reset();
+
+    int i = 0;
+    while (!ds.done()) {
+        tmp = (int*) ds.currPoint();
+        label = ds.currLabel();
+
+        //for (int i=0;i<dim;++i) std::cout << tmp[i] << " ";
+        //std::cout << "# " << label << std::endl;
+
+        for (int i=0;i<dim;++i) dataVec[i] = (float) tmp[i];
+
+        clusteringMachine.update(dataVec);
+
+        ds.next();
+        
+        if (i%200 == 0) std::cout << "numpoints processed = " << i << std::endl;
+
+        //if (i%200 == 0 && !ds.done()) { 
+        //    coreset = clusteringMachine.queryCoreset();
+        //
+        //    float score = kmeanspp(coreset, k,  centroids, cprime);
+        //    float newOverallAccuracy = accuracy(&data.at(0), &labels.at(0), numpoints, k, centroids, cprime, groundTruthCentroids, confusionMatrix);
+        //
+        //    std::cout << "num points processed = " << i << ", clustering score = " << score << std::endl; // 7 forest cover types
+        //    std::cout << "overall accuracy on the coreset= " << newOverallAccuracy << std::endl;
+        //
+        //    confusionMatrix.reset();
+        //    for (int j=0;j<k;++j) centroids[j].reset(); 
+        //    cprime.reset();
+        //
+        //}
+
+        ++i;
+
+    }
+
+
+    confusionMatrix.reset();
+    for (int i=0;i<k;++i) centroids[i].reset();
+
+    coreset = clusteringMachine.queryCoreset();
+    std::cout << "after inserting all the points, BICO generated a coreset of size = " << coreset.size() << std::endl;
+
+    Vec<uint> cprime(coreset.size(),new uint[coreset.size()]);
+    cprime.reset();
+
+    float newScore = kmeanspp(coreset,k,centroids,cprime);
+
+    std::cout << "the clustering score of the coreset is " << newScore << std::endl;
+
+    c.reset();
+    for (int i=0; i<numpoints; ++i) {
+        float mindistance = INFINITY;
+        Vec<float> distVec(k,new float[k]); // stores the distances of the point to it's BICO-computed centroid 
+        for (int j=0;j<k;++j) distVec[j] = Vec<float>::dist(data.at(i),centroids[j]);
+        c[i] = distVec.argMin();
+        distVec.clear();
+    }
+
+    float overallScore = kmeansclusterscore(&data.at(0),numpoints,k,centroids,c);
+    float newOverallAccuracy = accuracy(&data.at(0), &labels.at(0), numpoints, k, centroids, c, groundTruthCentroids, confusionMatrix);
+
+    std::cout << "using BICO-computed centroids as cluster centers, overall classification accuracy = .... " << overallAccuracy << std::endl;
+    std::cout << "printing the new confusion matrix..." << std::endl;
+    std::cout << confusionMatrix << std::endl;
+
+
 
     delete[] dataVec_buf;
 }
