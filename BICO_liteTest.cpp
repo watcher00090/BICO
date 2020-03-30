@@ -285,6 +285,7 @@ void test6() {
     Vec<uint> cprime(coreset.size(),new uint[coreset.size()]);
     cprime.reset();
 
+    for (int i=0;i<k;++i) centroids[i].reset();
     float newScore = kmeanspp(coreset,k,centroids,cprime);
 
     std::cout << "the clustering score of the coreset is " << newScore << std::endl;
@@ -298,10 +299,11 @@ void test6() {
         distVec.clear();
     }
 
-    float overallScore = kmeansclusterscore(&data.at(0),numpoints,k,centroids,c);
+    float newOverallScore = kmeansclusterscore(&data.at(0),numpoints,k,centroids,c);
     float newOverallAccuracy = accuracy(&data.at(0), &labels.at(0), numpoints, k, centroids, c, groundTruthCentroids, confusionMatrix);
 
-    std::cout << "using BICO-computed centroids as cluster centers, overall classification accuracy = " << overallAccuracy << std::endl;
+    std::cout << "using BICO-computed centroids as cluster centers, the new overall clustering score is " << newOverallScore << std::endl;
+    std::cout << "using BICO-computed centroids as cluster centers, overall classification accuracy = " << newOverallAccuracy << std::endl;
     std::cout << "printing the new confusion matrix..." << std::endl;
     std::cout << confusionMatrix << std::endl;
 
