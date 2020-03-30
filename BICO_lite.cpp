@@ -80,7 +80,7 @@ void BICO_lite::CF-update(ClusteringFeature* xFeat) {
         float cprime = xFeat->n_ * (l*l + d*d);
         xFeat->P_ *= xFeat->n_;
 
-        if (yFeat->level_ + d*d <= T_) {
+        if (_ + d*d <= T_) {
 
 
             break;

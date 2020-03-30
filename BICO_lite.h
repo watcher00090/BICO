@@ -19,7 +19,6 @@ class ClusteringFeature {
         unsigned n_; // number of points represented
         Vec<float> P_; // sum of represented points
         float s_; // sum of squared lengths of represented points
-        float c_;
         unsigned level_; 
 
         std::vector<ClusteringFeature*> children;
