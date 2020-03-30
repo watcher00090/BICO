@@ -26,6 +26,9 @@ class ClusteringFeature {
         void insert(Vec<float> x);
         void toStandardOutput();
         bool isRoot() { return isroot_; };
+        float c();
+        void clear();
+
 
      private:
         bool isroot_ = 0;
@@ -39,6 +42,7 @@ class BICO_lite {
         BICO_lite(unsigned d, float T) : T_(T), root(new ClusteringFeature(Vec<float>(d, new float[d]),1)) {};
         BICO_lite(unsigned d, float T, unsigned n_max) : n_max_(n_max), T_(T), root(new ClusteringFeature(Vec<float>(d, new float[d]),1)) {};
         void update(Vec<float> x);
+        void CFupdate(ClusteringFeature* xFeat);
         std::vector<CoresetPair> queryCoreset();
         void rebuild();
         void cf_update(Vec<float> x, ClusteringFeature cf);

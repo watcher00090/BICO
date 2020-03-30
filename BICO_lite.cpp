@@ -2,6 +2,7 @@
 #include <iterator>
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <stack>
 #include <cmath>
 
@@ -54,7 +55,18 @@ void ClusteringFeature::insert(Vec<float> x) {
     ++n_;
 }
 
-void BICO_lite::CF-update(ClusteringFeature* xFeat) {
+float ClusteringFeature::c() {
+    float A = Vec<float>::length(r_);
+    return n_ * A*A - 2 * Vec<float>::dot(r_,P_) + s_;
+}
+
+void ClusteringFeature::clear() {
+    r_.clear();  
+    P_.clear();
+    children.clear();
+}
+
+void BICO_lite::CFupdate(ClusteringFeature* xFeat) {
     ClusteringFeature* rFeat = root;
     Vec<float> r = rFeat->r_;
     Vec<float> x = xFeat->r_;
@@ -64,7 +76,6 @@ void BICO_lite::CF-update(ClusteringFeature* xFeat) {
 
     while (true)
     if (F.empty() || Vec<float>::dist(x, ClusteringFeature::nearest(x,F)->r_) > sqrt(T_ / pow(2,i+4))) {
-
         
         rFeat->children.push_back(xFeat);
         ++nFeatures_;
@@ -75,13 +86,19 @@ void BICO_lite::CF-update(ClusteringFeature* xFeat) {
         ClusteringFeature* yFeat = ClusteringFeature::nearest(x, F);
         Vec<float> y = yFeat->r_;
         xFeat->P_ /= xFeat->n_;
-        float len = Vec<float>::length(xFeat->P_);
+        float l = Vec<float>::length(xFeat->P_);
         float d   = Vec<float>::dist(y,xFeat->P_);
         float cprime = xFeat->n_ * (l*l + d*d);
         xFeat->P_ *= xFeat->n_;
 
-        if (_ + d*d <= T_) {
+        if (yFeat->c() + cprime <= T_) {
+            // merge xFeat into yFeat : total number of features in the tree is unchanged
+            yFeat->n_ += xFeat->n_;
+            yFeat->P_ += xFeat->P_;
+            yFeat->s_ += xFeat->s_;
 
+            //release storage associated with the xFeat
+            xFeat->clear();
 
             break;
         } else {
@@ -95,22 +112,27 @@ void BICO_lite::CF-update(ClusteringFeature* xFeat) {
 }
 
 void BICO_lite::rebuild() {
+    //std::cout << "rebuild() being called..." << std::endl;
+    ClusteringFeature* tmp;
     while (nFeatures_ >= n_max_) {
+        nFeatures_ = 0; // reset nFeatures_
         T_ = 2*T_;
         std::queue<ClusteringFeature*> Q;
         while (!root->children.empty()) {
-            Q.push(root->children.pop_back());
-            --nFeatures;
+            tmp = root->children.back();
+            Q.push(tmp);
+            root->children.pop_back();
         }
-
+        //std::cout << "Q.size() = " << Q.size() << std::endl;
         while (!Q.empty()) {
             ClusteringFeature* cf_x = Q.front();
-            Vec<float> x = feat->P_;
+            Vec<float> x = cf_x->P_;
             while (!cf_x->children.empty()) {
-                Q.push(cf_x->children.pop_back());
-                --nFeatures;
+                tmp = cf_x->children.back();
+                Q.push(tmp);
+                cf_x->children.pop_back();
             }
-            CF-update(cf_x);
+            CFupdate(cf_x);
             Q.pop(); // remove cf_x from Q
         }
     }

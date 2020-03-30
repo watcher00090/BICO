@@ -117,16 +117,16 @@ void test5() {
      *          f9
      *
      * *********************************/
-    f0.level=0;
-    f1.level=1;
-    f2.level=2;
-    f3.level=2;
-    f4.level=2;
-    f5.level=1;
-    f6.level=2;
-    f7.level=3;
-    f8.level=3;
-    f9.level=2;
+    f0.level_=0;
+    f1.level_=1;
+    f2.level_=2;
+    f3.level_=2;
+    f4.level_=2;
+    f5.level_=1;
+    f6.level_=2;
+    f7.level_=3;
+    f8.level_=3;
+    f9.level_=2;
 
     f0.children.push_back(&f1);
     f0.children.push_back(&f5);
@@ -301,7 +301,7 @@ void test6() {
     float overallScore = kmeansclusterscore(&data.at(0),numpoints,k,centroids,c);
     float newOverallAccuracy = accuracy(&data.at(0), &labels.at(0), numpoints, k, centroids, c, groundTruthCentroids, confusionMatrix);
 
-    std::cout << "using BICO-computed centroids as cluster centers, overall classification accuracy = .... " << overallAccuracy << std::endl;
+    std::cout << "using BICO-computed centroids as cluster centers, overall classification accuracy = " << overallAccuracy << std::endl;
     std::cout << "printing the new confusion matrix..." << std::endl;
     std::cout << confusionMatrix << std::endl;
 
